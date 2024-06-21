@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <pwd.h>
+#include <limits.h>
 
 
 
@@ -23,7 +24,17 @@ void change_directory(char ** path);
 int main() {
     string input;
 
+
     while (!cin.eof() && input != "exit") {
+        char current_working_directory[PATH_MAX];
+
+        if (getcwd(current_working_directory, sizeof(current_working_directory)) == NULL) {
+            perror("getcwd() error");
+        }
+
+        char previous_directory[PATH_MAX];
+
+        cout << "[" << current_working_directory << "]" << endl;
         cout << "> ";
 
         getline(cin, input);
@@ -51,10 +62,13 @@ int main() {
 
             }
         }
-
         wait(nullptr);
 
+        for (size_t i = 0; parsed_command_array[i] != nullptr; ++i) {
+            free(parsed_command_array[i]);
+        }
     }
+
 
     return 0;
 }
@@ -64,23 +78,27 @@ void change_directory(char **p) {
 
     const char *homedir = pw->pw_dir;
 
+    cout << homedir << endl;
+
     if (*p == nullptr) {
-        cout << "GOING TO HOME!" << endl;
-        current_path(path(homedir));
+        current_path(homedir);
+    }
+    else if (strcmp(*p, "-") == 0) {
+
     }
     else {
-        cout << "GOING TO PATH!" << endl;
-        current_path(path(*p));
+        current_path(*p);
     }
-
 }
 
 char ** convert_vector_to_array(vector<string> &parsed_command) {
-    char ** out = new char * [parsed_command.size()];
+    char ** out = new char * [parsed_command.size() + 1];
 
     for (size_t i = 0; i < parsed_command.size(); ++i) {
-        out[i] = parsed_command[i].data();
+        out[i] = strdup(parsed_command[i].c_str());
     }
+
+    out[parsed_command.size()] = nullptr;
 
     return out;
 }
