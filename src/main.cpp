@@ -57,7 +57,6 @@ int main() {
         }
         else {
             int pid = fork();
-            
 
             if (pid < 0) {
                 perror("Failed to fork");
