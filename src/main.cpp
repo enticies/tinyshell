@@ -23,7 +23,7 @@ char **convert_vector_to_array(vector<string> &parsed_command);
 
 void change_directory(char **path);
 
-void fork_and_exec_with_io(char *cmd, int stdout_fd, int stdin_fd);
+void fork_and_exec_with_io(char* cmd, int stdin_fd, int stdout_fd);
 
 int main() {
     string input;
@@ -43,6 +43,8 @@ int main() {
         getline(cin, input);
 
         vector<string> parsed_command = parse_command(input);
+
+
         char **parsed_command_array = convert_vector_to_array(parsed_command);
 
         if (parsed_command.empty()) {
@@ -70,32 +72,10 @@ int main() {
             }
             wait(nullptr);
         }
-
-
-        for (size_t i = 0; parsed_command_array[i] != nullptr; ++i) {
-            free(parsed_command_array[i]);
-        }
     }
 
 
     return 0;
-}
-
-void fork_and_exec_with_io(char *cmd, int stdin_fd, int stdout_fd) {
-    int pid = fork();
-
-    if (pid < 0) {
-        throw std::runtime_error("Failed to fork");
-    }
-
-    int pipe_fds[2];
-
-    pipe(pipe_fds);
-
-    if (dup2(pipe_fds[0], stdin_fd) == -1 || dup2(pipe_fds[1], stdout_fd) == -1) {
-        throw std::runtime_error("Failed to dup2");
-    }
-
 }
 
 void change_directory(char **p) {
