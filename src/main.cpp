@@ -54,9 +54,6 @@ int main() {
         if (parsed_command[0] == "cd") {
             change_directory(++parsed_command_array);
         }
-        else if (parsed_command.size() == 3 && parsed_command[1] == "|") {
-            fork_and_exec_with_io(parsed_command_array[0], 0, 1);
-        }
         else {
             int pid = fork();
 
@@ -94,48 +91,5 @@ void change_directory(char **p) {
     else {
         current_path(*p);
     }
-}
-
-char **convert_vector_to_array(vector<string> &parsed_command) {
-    char **out = new char *[parsed_command.size() + 1];
-
-    for (size_t i = 0; i < parsed_command.size(); ++i) {
-        out[i] = strdup(parsed_command[i].c_str());
-    }
-
-    out[parsed_command.size()] = nullptr;
-
-    return out;
-}
-
-void print_parsed_command(const vector<string> &command) {
-    string out;
-
-    for (size_t i = 0; i < command.size(); ++i) {
-        cout << "TOKEN " << i << ": " << command[i] << endl;
-    }
-}
-
-// refactor so that this returns an array
-vector<string> parse_command(const string &command) {
-    vector<string> out{};
-
-    string currentString;
-
-    for (const auto &token: command) {
-        if (!isspace(token)) {
-            currentString += token;
-        }
-        else {
-            if (!currentString.empty()) {
-                out.push_back(currentString.c_str());
-            }
-            currentString = "";
-        }
-    }
-
-    out.push_back(currentString.c_str());
-
-    return out;
 }
 
